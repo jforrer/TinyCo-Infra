@@ -14,18 +14,26 @@ foreach ($team in $teams) {
     Write-Host "Creating: $groupName"
     
     try {
+        #check if group already exists
+        $existingGroup = Get-MgGroup -Filter "displayName eq '$groupName'" -ErrorAction SilentlyContinue
+        if ($existingGroup) {
+            Write-Host "Group $groupName already exists. Skipping..." -ForegroundColor Yellow
+            continue
+        }
+        # Create dynamic groups
         New-MgGroup -DisplayName $groupName `
-                   -MailEnabled:$true `
-                   -SecurityEnabled:$true `
-                   -MailNickname $groupName.Replace("-", "").ToLower() `
-                   -GroupTypes @("DynamicMembership") `
-                   -MembershipRule $dynamicRule `
-                   -MembershipRuleProcessingState "On" `
-                   -Description "Dynamic group for $team team"
+            -MailEnabled:$false `
+            -SecurityEnabled:$true `
+            -MailNickname $groupName.Replace("-", "").ToLower() `
+            -GroupTypes @("DynamicMembership") `
+            -MembershipRule $dynamicRule `
+            -MembershipRuleProcessingState "On" `
+            -Description "Dynamic group for $team team"
         
         Write-Host "Created: $groupName" -ForegroundColor Green
         
-    } catch {
+    }
+    catch {
         Write-Host "Failed: $groupName - $($_.Exception.Message)" -ForegroundColor Red
     }
 }

@@ -38,3 +38,55 @@ variable "resource_owner" {
   type        = string
   default     = "ITOps-Team"
 }
+
+variable "sku_name" {
+  description = "The Name of the SKU used for this Key Vault"
+  type        = string
+  default     = "standard"
+}
+
+variable "itops_key_permissions" {
+  description = "Key permissions for ITOps team"
+  type        = list(string)
+  default = [
+    "Get", "List", "Update", "Create", "Import", "Delete", "Recover",
+    "Backup", "Restore", "Decrypt", "Encrypt", "UnwrapKey", "WrapKey",
+    "Verify", "Sign", "Purge"
+  ]
+}
+
+variable "itops_secret_permissions" {
+  description = "Secret permissions for ITOps team"
+  type        = list(string)
+  default = [
+    "Get", "List", "Set", "Delete", "Recover", "Backup", "Restore", "Purge"
+  ]
+}
+
+variable "itops_certificate_permissions" {
+  description = "Certificate permissions for ITOps team"
+  type        = list(string)
+  default = [
+    "Get", "List", "Update", "Create", "Import", "Delete", "Recover",
+    "Backup", "Restore", "ManageContacts", "ManageIssuers", "GetIssuers",
+    "ListIssuers", "SetIssuers", "DeleteIssuers", "Purge"
+  ]
+}
+
+variable "sre_key_permissions" {
+  description = "Key permissions for SRE team"
+  type        = list(string)
+  default     = ["Get", "List", "Decrypt", "Encrypt", "Create", "Update"]
+}
+
+variable "sre_secret_permissions" {
+  description = "Secret permissions for SRE team"
+  type        = list(string)
+  default     = ["Get", "List", "Set", "Delete"]
+}
+
+variable "sre_certificate_permissions" {
+  description = "Certificate permissions for SRE team"
+  type        = list(string)
+  default     = ["Get", "List", "Import", "Update"]
+}

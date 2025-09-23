@@ -14,7 +14,7 @@ data "azuread_group" "sre_group" {
   security_enabled = true
 }
 
-data "azurerm_key_vault_secret" "tailscale_key" {
+data "azurerm_key_vault_secret" "tailscale_auth_key" {
   name         = "tailscale-auth-key"
   key_vault_id = azurerm_key_vault.main.id
 }

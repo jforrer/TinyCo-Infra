@@ -90,3 +90,8 @@ variable "sre_certificate_permissions" {
   type        = list(string)
   default     = ["Get", "List", "Import", "Update"]
 }
+
+variable "ssh_public_key" {
+  description = "SSH public key for VM access (set via TF_VAR_ssh_public_key environment variable)"
+  type        = string
+}

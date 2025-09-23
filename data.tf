@@ -13,3 +13,8 @@ data "azuread_group" "sre_group" {
   display_name     = "PIM-SRE-CloudCompute"
   security_enabled = true
 }
+
+data "azurerm_key_vault_secret" "tailscale_key" {
+  name         = "tailscale-auth-key"
+  key_vault_id = azurerm_key_vault.main.id
+}

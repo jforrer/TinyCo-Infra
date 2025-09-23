@@ -16,6 +16,31 @@ resource "azurerm_key_vault" "main" {
   tags = local.common_tags
 }
 
+#Add access policy for the deployment service principal/user
+resource "azurerm_key_vault_access_policy" "terraform_policy" {
+  key_vault_id = azurerm_key_vault.main.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = data.azurerm_client_config.current.object_id
+  key_permissions = [
+    "Get",
+    "List",
+    "Create",
+    "Delete",
+  ]
+  secret_permissions = [
+    "Get",
+    "List",
+    "Set",
+    "Delete",
+  ]
+  certificate_permissions = [
+    "Get",
+    "List",
+    "Create",
+    "Delete",
+  ]
+}
+
 resource "azurerm_key_vault_access_policy" "itops_policy" {
   key_vault_id = azurerm_key_vault.main.id
   tenant_id    = data.azurerm_client_config.current.tenant_id

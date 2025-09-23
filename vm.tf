@@ -54,21 +54,35 @@ resource "azurerm_linux_virtual_machine" "main" {
   # Embedded bootstrap script
   custom_data = base64encode(<<-EOF
 #!/bin/bash
-# Embedded bootstrap script for TinyCo VM
+# TinyCo VM Embedded Bootstrap Script
 
 set -e
 
-# Update system
+# Log all output for troubleshooting
+exec > >(tee -a /tmp/bootstrap.log) 2>&1
+
+# Function to wait for APT/dpkg lock release
+wait_for_apt() {
+    while sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 ; do
+        echo "Waiting for package manager lock..."
+        sleep 5
+    done
+}
+
+# Update package list
+wait_for_apt
 apt-get update
-apt-get upgrade -y
 
 # Install required packages
+wait_for_apt
 apt-get install -y curl wget unzip jq
 
 # Install Azure CLI
+wait_for_apt
 curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
 # Install Tailscale
+wait_for_apt
 curl -fsSL https://tailscale.com/install.sh | sh
 
 # Wait for managed identity with retry logic
@@ -86,7 +100,7 @@ for i in {1..10}; do
     fi
 done
 
-# Get Tailscale auth key with validation
+# Get Tailscale auth key from Azure Key Vault
 echo "Retrieving Tailscale auth key from Key Vault..."
 if ! AUTH_KEY=$(az keyvault secret show --name "tailscale-auth-key" --vault-name "${azurerm_key_vault.main.name}" --query value -o tsv 2>/dev/null); then
     echo "ERROR: Cannot access Key Vault secret 'tailscale-auth-key'"
@@ -113,8 +127,10 @@ fi
 echo "Bootstrap completed successfully at $(date)" > /tmp/bootstrap-complete
 echo "Tailscale status:" >> /tmp/bootstrap-complete
 tailscale status >> /tmp/bootstrap-complete 2>&1
+
 EOF
-  )
+)
+
 
   tags = local.common_tags
 }

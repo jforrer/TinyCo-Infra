@@ -42,3 +42,28 @@ output "sre_group_id" {
   description = "Object ID of the SRE Azure AD group"
   value       = data.azuread_group.sre_group.object_id
 }
+
+output "vm_private_ip" {
+  description = "Private IP address of the VM"
+  value       = azurerm_network_interface.main.private_ip_address
+}
+
+output "vm_name" {
+  description = "Name of the VM"
+  value       = azurerm_linux_virtual_machine.main.name
+}
+
+output "tailscale_ssh_info" {
+  description = "SSH via Tailscale (IP will be assigned after Tailscale connects)"
+  value       = "ssh azureuser@<tailscale-ip> (check Tailscale admin console for VM IP)"
+}
+
+output "azure_ssh_connection" {
+  description = "Azure AD SSH connection command"
+  value       = "az ssh vm --name ${azurerm_linux_virtual_machine.main.name} --resource-group ${azurerm_linux_virtual_machine.main.resource_group_name}"
+}
+
+output "virtual_network_id" {
+  description = "ID of the virtual network"
+  value       = azurerm_virtual_network.main.id
+}

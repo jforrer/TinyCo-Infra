@@ -48,7 +48,6 @@ resource "azurerm_linux_virtual_machine" "main" {
     version   = "latest"
   }
 
-  # Embedded bootstrap script with robust apt lock waiting!
   custom_data = base64encode(<<-EOF
 #!/bin/bash
 set -e
@@ -80,7 +79,6 @@ curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 wait_for_apt
 curl -fsSL https://tailscale.com/install.sh | sh
 
-# Enable Tailscale SSH and join with tag for ACL targeting
 tailscale up --ssh --advertise-tags=tag:ssh-enabled --authkey="${data.azurerm_key_vault_secret.tailscale_auth.value}"
 EOF
   )

@@ -1,60 +1,35 @@
+custom_data = base64encode(<<-EOF
 #!/bin/bash
-# bootstrap.sh - TinyCo VM Bootstrap Script
-
 set -e
+exec > >(tee -a /tmp/bootstrap.log) 2>&1
 
-# Update system
+# Give cloud-init time to finish, then robust apt lock handling
+sleep 90
+
+wait_for_apt() {
+  while \
+    sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 || \
+    sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1 || \
+    sudo fuser /var/lib/apt/lists/lock >/dev/null 2>&1
+  do
+    echo "Waiting for apt/dpkg locks to be released..."
+    sleep 5
+  done
+}
+
+wait_for_apt
 apt-get update
-apt-get upgrade -y
 
-# Install required packages
+wait_for_apt
 apt-get install -y curl wget unzip jq
 
-# Install Azure CLI (for Key Vault access)
+wait_for_apt
 curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
-# Install Tailscale
+wait_for_apt
 curl -fsSL https://tailscale.com/install.sh | sh
 
-# Wait for managed identity with retry logic
-echo "Waiting for managed identity to be ready..."
-for i in {1..10}; do
-    if az login --identity 2>/dev/null; then 
-        echo "Managed identity authenticated successfully"
-        break
-    fi
-    echo "Managed identity not ready, attempt $i/10"
-    sleep 30
-    if [ $i -eq 10 ]; then
-        echo "ERROR: Managed identity failed after 10 attempts"
-        exit 1
-    fi
-done
-
-# Get Tailscale auth key with validation
-echo "Retrieving Tailscale auth key from Key Vault..."
-if ! AUTH_KEY=$(az keyvault secret show --name "tailscale-auth-key" --vault-name "${key_vault_name}" --query value -o tsv 2>/dev/null); then
-    echo "ERROR: Cannot access Key Vault secret 'tailscale-auth-key'"
-    echo "Vault: ${key_vault_name}"
-    exit 1
-fi
-
-# Validate auth key is not empty
-if [ -z "$AUTH_KEY" ] || [ "$AUTH_KEY" = "null" ]; then
-    echo "ERROR: Auth key is empty or null"
-    exit 1
-fi
-
-# Join Tailscale network
-echo "Successfully retrieved auth key, joining Tailscale network..."
-if tailscale up --authkey="$AUTH_KEY" --accept-routes; then
-    echo "Tailscale setup completed successfully!"
-else
-    echo "ERROR: Failed to join Tailscale network"
-    exit 1
-fi
-
-# Create status file
-echo "Bootstrap completed successfully at $(date)" > /tmp/bootstrap-complete
-echo "Tailscale status:" >> /tmp/bootstrap-complete
-tailscale status >> /tmp/bootstrap-complete 2>&1
+# Enable Tailscale SSH and join with tag for ACL targeting
+tailscale up --ssh --advertise-tags=tag:ssh-enabled --authkey="${data.azurerm_key_vault_secret.tailscale_auth.value}"
+EOF
+)

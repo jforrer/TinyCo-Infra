@@ -1,0 +1,17 @@
+{
+    "ssh": [
+        {
+            "action": "accept",
+            "src": [
+                "group:team-itops@tinycoddg.onmicrosoft.com",
+                "group:team-sre@tinycoddg.onmicrosoft.com"
+            ],
+            "dst": [
+                "tag:ssh-enabled"
+            ],
+            "users": [
+                "azureuser"
+            ]
+        }
+    ]
+}

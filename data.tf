@@ -28,4 +28,3 @@ data "azurerm_key_vault_secret" "tailscale_oauth_client_secret" {
   name         = "tailscale-oauth-client-secret"     
   key_vault_id = azurerm_key_vault.main.id
 }
-d

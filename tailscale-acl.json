@@ -1,17 +1,22 @@
 {
-    "ssh": [
-        {
-            "action": "accept",
-            "src": [
-                "group:team-itops@tinycoddg.onmicrosoft.com",
-                "group:team-sre@tinycoddg.onmicrosoft.com"
-            ],
-            "dst": [
-                "tag:ssh-enabled"
-            ],
-            "users": [
-                "azureuser"
-            ]
-        }
+  "TagOwners": {
+    "tag:ssh-enabled": [
+      "group:team-itops@tinycoddg.onmicrosoft.com"
     ]
+  },
+  "ssh": [
+    {
+      "action": "accept",
+      "src": [
+        "group:team-itops@tinycoddg.onmicrosoft.com",
+        "group:team-sre@tinycoddg.onmicrosoft.com"
+      ],
+      "dst": [
+        "tag:ssh-enabled"
+      ],
+      "users": [
+        "azureuser"
+      ]
+    }
+  ]
 }

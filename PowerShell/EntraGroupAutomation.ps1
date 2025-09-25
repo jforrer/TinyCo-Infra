@@ -9,7 +9,7 @@ $teams = @("ITOps", "SRE", "Security", "Backend", "Frontend", "Design", "Product
 
 foreach ($team in $teams) {
     $groupName = "Team-$team"
-    $dynamicRule = "user.department -eq `"$team`""
+    $dynamicRule = "user.department -eq `"$team`" and user.accountEnabled -eq true"
     
     Write-Host "Creating: $groupName"
     

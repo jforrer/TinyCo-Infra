@@ -1,22 +1,44 @@
 {
-  "TagOwners": {
-    "tag:ssh-enabled": [
-      "group:team-itops@tinycoddg.onmicrosoft.com"
-    ]
+  "tagOwners": {
+    "tag:ssh-enabled": ["group:team-itops@tinycoddg.onmicrosoft.com"]
   },
-  "ssh": [
+  "acls": [
+    {
+      "action": "accept",
+      "src": ["group:team-itops@tinycoddg.onmicrosoft.com"],
+      "dst": ["*:*"]
+    },
     {
       "action": "accept",
       "src": [
-        "group:team-itops@tinycoddg.onmicrosoft.com",
-        "group:team-sre@tinycoddg.onmicrosoft.com"
+        "group:team-sre@tinycoddg.onmicrosoft.com",
+        "group:team-security@tinycoddg.onmicrosoft.com",
+        "group:team-backend@tinycoddg.onmicrosoft.com"
       ],
-      "dst": [
-        "tag:ssh-enabled"
+      "dst": ["10.0.1.0/24:*", "tag:ssh-enabled:*"]
+    },
+    {
+      "action": "accept",
+      "src": ["group:team-frontend@tinycoddg.onmicrosoft.com"],
+      "dst": ["10.0.1.0/24:80,443"]
+    }
+  ],
+  "ssh": [
+    {
+      "action": "accept",
+      "src": ["group:team-itops@tinycoddg.onmicrosoft.com"],
+      "dst": ["tag:ssh-enabled"],
+      "users": ["azureuser"]
+    },
+    {
+      "action": "accept",
+      "src": [
+        "group:team-sre@tinycoddg.onmicrosoft.com",
+        "group:team-security@tinycoddg.onmicrosoft.com",
+        "group:team-backend@tinycoddg.onmicrosoft.com"
       ],
-      "users": [
-        "azureuser"
-      ]
+      "dst": ["tag:ssh-enabled"],
+      "users": ["azureuser"]
     }
   ]
 }

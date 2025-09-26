@@ -3,12 +3,11 @@ locals {
 
 
   common_tags = {
-    Environment    = var.environment
-    CostCenter     = var.cost_center
-    Owner          = var.resource_owner
-    Project        = "TinyCo-Infrastructure"
-    DeployedBy     = "Terraform"
-    DeploymentDate = formatdate("YYYY-MM-DD", timestamp())
+    Environment = var.environment
+    CostCenter  = var.cost_center
+    Owner       = var.resource_owner
+    Project     = "TinyCo-Infrastructure"
+    DeployedBy  = "Terraform"
   }
 }
 
